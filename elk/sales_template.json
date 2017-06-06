@@ -1,0 +1,31 @@
+{
+  "template": "sales-*",
+  "order": 1,
+  "settings": {
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "application": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "level": {
+          "type": "keyword"
+        },
+        "host": {
+          "type": "keyword"
+        },
+        "thread": {
+          "type": "keyword"
+        },
+        "type": {
+          "type": "keyword"
+        },
+        "class": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
