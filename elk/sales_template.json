@@ -26,6 +26,16 @@
           "type": "keyword"
         }
       }
+    },
+    "shop": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "action": {
+          "type": "keyword"
+        }
+      }
     }
   }
 }
