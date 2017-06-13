@@ -1,0 +1,88 @@
+PUT _ingest/pipeline/pipeline-application
+{
+  "description" : "Pipeline de gestion des logs applicatifs",
+  "version": 1,
+  "processors": [
+  {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "%{TIMESTAMP_ISO8601:timestamp}%{SPACE}%{LOGLEVEL:level} %{NUMBER:pid} --- \[%{GREEDYDATA:thread}\] %{NOTSPACE:class}%{SPACE}: %{GREEDYDATA:message}"
+        ]
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "formats": [
+          "yyyy-MM-dd HH:mm:ss.SSS"
+        ],
+        "timezone": "Europe/Paris"
+      }
+    },
+    {
+      "remove": {
+        "field": "timestamp"
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "_index",
+        "value": "failed-{{ _index }}"
+      }
+    },
+    {
+      "set": {
+        "field": "error",
+        "value": "{{ _ingest.on_failure_message }}"
+      }
+    }
+  ]
+}
+
+
+PUT _ingest/pipeline/pipeline-shop
+{
+  "description": "Pipeline de gestion des logs fonctionnels",
+  "version": 1,
+  "processors": [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "%{TIMESTAMP_ISO8601:timestamp} - %{NOTSPACE:action} %{NUMBER:client} %{NUMBER:product}"
+        ]
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "formats": [
+          "yyyy-MM-dd HH:mm:ss"
+        ],
+        "timezone": "Europe/Paris"
+      }
+    },
+    {
+      "remove": {
+        "field": "timestamp"
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "_index",
+        "value": "failed-{{ _index }}"
+      }
+    },
+    {
+      "set": {
+        "field": "error",
+        "value": "{{ _ingest.on_failure_message }}"
+      }
+    }
+  ]
+}
