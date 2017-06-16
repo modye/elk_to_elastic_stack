@@ -4,14 +4,14 @@ filebeat.prospectors:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /home/maxime/Documents/talks/matinale_es/logs/shop*.log
+    - /home/erwann/matinale_es/log-generator/target/shop*.log
   document_type: shop
 
 - input_type: log
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /home/maxime/Documents/talks/matinale_es/logs/application*.log
+    - /home/erwann/matinale_es/log-generator/target/application*.log
   document_type: application
 
   ### Multiline options

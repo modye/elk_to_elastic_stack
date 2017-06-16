@@ -1,3 +1,62 @@
+POST _ingest/pipeline/_simulate
+{
+  "pipeline": {
+    "description": "Pipeline de gestion des logs applicatifs",
+    "version": 1,
+    "processors": [
+      {
+        "grok": {
+          "field": "message",
+          "patterns": [
+            """%{TIMESTAMP_ISO8601:timestamp}%{SPACE}%{LOGLEVEL:level} %{NUMBER:pid} --- \[%{GREEDYDATA:thread}\] %{NOTSPACE:class}%{SPACE}: %{GREEDYDATA:message}"""
+          ]
+        }
+      },
+      {
+        "date": {
+          "field": "timestamp",
+          "formats": [
+            "yyyy-MM-dd HH:mm:ss.SSS"
+          ],
+          "timezone": "Europe/Paris",
+          "target_field": "@timestamp"
+        }
+      },
+      {
+        "remove": {
+          "field": "timestamp"
+        }
+      }
+    ],
+    "on_failure": [
+      {
+        "set": {
+          "field": "_index",
+          "value": "failed-{{ _index }}"
+        }
+      },
+      {
+        "set": {
+          "field": "error",
+          "value": "{{ _ingest.on_failure_message }}"
+        }
+      }
+    ]
+  },
+  "docs": [
+    {
+      "_index": "index",
+      "_type": "type",
+      "_id": "id",
+      "_source": {
+        "message": "2017-06-14 00:21:51.094  INFO 11500 --- [main] o.z.m.e.l.LogGeneratorApplication        : An operation occured"
+      }
+    }
+  ]
+}
+
+
+
 PUT _ingest/pipeline/pipeline-application
 {
   "description" : "Pipeline de gestion des logs applicatifs",
@@ -7,7 +66,7 @@ PUT _ingest/pipeline/pipeline-application
       "grok": {
         "field": "message",
         "patterns": [
-          "%{TIMESTAMP_ISO8601:timestamp}%{SPACE}%{LOGLEVEL:level} %{NUMBER:pid} --- \[%{GREEDYDATA:thread}\] %{NOTSPACE:class}%{SPACE}: %{GREEDYDATA:message}"
+            """%{TIMESTAMP_ISO8601:timestamp}%{SPACE}%{LOGLEVEL:level} %{NUMBER:pid} --- \[%{GREEDYDATA:thread}\] %{NOTSPACE:class}%{SPACE}: %{GREEDYDATA:message}"""
         ]
       }
     },
@@ -17,7 +76,8 @@ PUT _ingest/pipeline/pipeline-application
         "formats": [
           "yyyy-MM-dd HH:mm:ss.SSS"
         ],
-        "timezone": "Europe/Paris"
+        "timezone": "Europe/Paris",
+        "target_field": "@timestamp"
       }
     },
     {
@@ -60,9 +120,10 @@ PUT _ingest/pipeline/pipeline-shop
       "date": {
         "field": "timestamp",
         "formats": [
-          "yyyy-MM-dd HH:mm:ss"
+          "yyyy-MM-dd HH:mm:ss.SSS"
         ],
-        "timezone": "Europe/Paris"
+        "timezone": "Europe/Paris",
+        "target_field": "@timestamp"
       }
     },
     {
